@@ -36,9 +36,13 @@ GET /price?ticker=AMZN&from=2021-10-01&to=2021-11-01
    $> git clone https://github.com/sahebray85/StockExchange.git
 
 2. Build the Application
+
    2.a) Goto to your checkout location
+   
         $> cd StockExchange
+   
    2.b) Build using maven
+   
          $> mvnw clean install (Windows)
          $> ./mvnw clean install (Unix Shell)
    
