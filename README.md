@@ -43,15 +43,24 @@ GET /price?ticker=AMZN&from=2021-10-01&to=2021-11-01
         $> cd StockExchange
    
    2.b) Build using maven
+
+     Windows
    
-         $> mvnw clean install (Windows)
-         $> ./mvnw clean install (Unix Shell)
+         $> mvnw clean install
+
+     Unix Shell
    
-4. Run the application server.
-  ```
-   $> mvnw spring-boot:run (Windows)
-   $> ./mvnw spring-boot:run (Unix Shell)
-  ```
+         $> ./mvnw clean install
+   
+5. Run the application server.
+   Windows
+   
+       $> mvnw spring-boot:run
+
+   Unix Shell
+
+       $> ./mvnw spring-boot:run
+
    The local server should be running on localhost:8080
 
 ### How to Test the server
