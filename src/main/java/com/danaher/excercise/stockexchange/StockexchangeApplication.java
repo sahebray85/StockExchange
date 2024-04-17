@@ -2,12 +2,14 @@ package com.danaher.excercise.stockexchange;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
-public class StockexchangeApplication {
+@PropertySource("classpath:application.properties")
+public class StockExchangeApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(StockexchangeApplication.class, args);
+		SpringApplication.run(StockExchangeApplication.class, args);
 	}
 
 }

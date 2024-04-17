@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
+import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -18,7 +19,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Component
-public class RequestValidatorWorkflow implements Function<InternalDataModel, InternalDataModel> {
+public class RequestValidatorWorkflow implements Function<InternalDataModel, Flux<InternalDataModel>> {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestValidatorWorkflow.class);
 
@@ -35,14 +36,18 @@ public class RequestValidatorWorkflow implements Function<InternalDataModel, Int
     private String maxDaysDuration;
 
     @Override
-    public InternalDataModel apply(InternalDataModel internalDataModel) {
+    public Flux<InternalDataModel> apply(InternalDataModel internalDataModel) {
+        return Flux.just(internalDataModel)
+                .doOnNext(this::validate);
+    }
 
+    public void validate(InternalDataModel internalDataModel) {
         WebRequest webRequest = internalDataModel.webRequest;
 
         internalDataModel.requestParams = new HashMap<>();
-        for(String key : validators.keySet()) {
+        for (String key : validators.keySet()) {
             try {
-                internalDataModel.requestParams.put(key, webRequest.getParameter(key));
+                webRequest.getParameter(key);
             } catch (NullPointerException ex) {
                 String msg = Objects.requireNonNull(validators.get(key)).get();
                 logger.error(msg);
@@ -50,15 +55,8 @@ public class RequestValidatorWorkflow implements Function<InternalDataModel, Int
             }
         }
 
-        // Validate ticker
-        if(!supportedTickers.contains(webRequest.getParameter("ticker"))) {
-            String msg = "Unsupported ticker: must of one of: " + supportedTickers;
-            logger.error(msg);
-            throw new InvalidArgsException(msg);
-        }
-
         try {
-            internalDataModel.startDate = LocalDate.parse(internalDataModel.requestParams.get("from"));
+            internalDataModel.startDate = LocalDate.parse(Objects.requireNonNull(webRequest.getParameter("from")));
         } catch (DateTimeParseException ex) {
             String msg = String.format("Invalid start_data: [%s], Should be of format YYYY-MM--DD", internalDataModel.requestParams.get("from"));
             logger.error(msg);
@@ -66,7 +64,7 @@ public class RequestValidatorWorkflow implements Function<InternalDataModel, Int
         }
 
         try {
-            internalDataModel.endDate = LocalDate.parse(internalDataModel.requestParams.get("to"));
+            internalDataModel.endDate = LocalDate.parse(Objects.requireNonNull(webRequest.getParameter("to")));
         } catch (DateTimeParseException ex) {
             String msg = String.format("Invalid end_data [%s], Should be of format YYYY-MM--DD", internalDataModel.requestParams.get("to"));
             logger.error(msg);
@@ -79,12 +77,20 @@ public class RequestValidatorWorkflow implements Function<InternalDataModel, Int
             throw new InvalidArgsException(msg);
         }
 
-        if(internalDataModel.startDate.plusDays(Integer.parseInt(maxDaysDuration)).isBefore(internalDataModel.endDate)) {
+        if (internalDataModel.startDate.plusDays(Integer.parseInt(maxDaysDuration)).isBefore(internalDataModel.endDate)) {
             String msg = String.format("Max duration between start and end date is %s days", maxDaysDuration);
             logger.error(msg);
             throw new InvalidArgsException(msg);
         }
 
-        return internalDataModel;
+        // Validate ticker
+        if (!supportedTickers.contains(webRequest.getParameter("ticker"))) {
+            String msg = "Unsupported ticker: must of one of: " + supportedTickers;
+            logger.error(msg);
+            throw new InvalidArgsException(msg);
+        } else {
+            internalDataModel.tickerSymbol = webRequest.getParameter("ticker");
+        }
+
     }
 }
