@@ -44,7 +44,6 @@ public class RequestValidatorWorkflow implements Function<InternalDataModel, Flu
     public void validate(InternalDataModel internalDataModel) {
         WebRequest webRequest = internalDataModel.webRequest;
 
-        internalDataModel.requestParams = new HashMap<>();
         for (String key : validators.keySet()) {
             try {
                 webRequest.getParameter(key);
@@ -58,7 +57,7 @@ public class RequestValidatorWorkflow implements Function<InternalDataModel, Flu
         try {
             internalDataModel.startDate = LocalDate.parse(Objects.requireNonNull(webRequest.getParameter("from")));
         } catch (DateTimeParseException ex) {
-            String msg = String.format("Invalid start_data: [%s], Should be of format YYYY-MM--DD", internalDataModel.requestParams.get("from"));
+            String msg = String.format("Invalid start_data: [%s], Should be of format YYYY-MM--DD", webRequest.getParameter("from"));
             logger.error(msg);
             throw new InvalidArgsException(msg);
         }
@@ -66,7 +65,7 @@ public class RequestValidatorWorkflow implements Function<InternalDataModel, Flu
         try {
             internalDataModel.endDate = LocalDate.parse(Objects.requireNonNull(webRequest.getParameter("to")));
         } catch (DateTimeParseException ex) {
-            String msg = String.format("Invalid end_data [%s], Should be of format YYYY-MM--DD", internalDataModel.requestParams.get("to"));
+            String msg = String.format("Invalid end_data [%s], Should be of format YYYY-MM--DD", webRequest.getParameter("to"));
             logger.error(msg);
             throw new InvalidArgsException(msg);
         }
