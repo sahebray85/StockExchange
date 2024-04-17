@@ -7,7 +7,6 @@ import com.danaher.excercise.stockexchange.service.StockPriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +26,7 @@ public class StockPriceRestController {
         InternalDataModel model = new InternalDataModel();
         model.webRequest = webRequest;
         service.fetchStockPrice(model).log().blockFirst();
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(model.closePriceRecords);
     }
 }
