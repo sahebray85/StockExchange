@@ -12,8 +12,9 @@ public class InternalDataModel {
     public LocalDate startDate;
     public LocalDate endDate;
 
+    public String tickerSymbol;
 
     public Map<String, String> requestParams;
 
-    public Map<String, String> stockExchangeResponses;
+    public StockPriceResponse stockExchangeResponse;
 }

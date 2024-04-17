@@ -24,9 +24,9 @@ public class StockPriceRestController {
         try {
             InternalDataModel model = new InternalDataModel();
             model.webRequest = webRequest;
-            service.calculateEmission(model).log().blockFirst();
+            service.fetchStockPrice(model).log().blockFirst();
             return ResponseEntity.status(HttpStatus.ACCEPTED)
-                    .body(String.format("Your trip caused %.3fkg of CO2-equivalent", "Sankha"));
+                    .body("Success");
         } catch (InvalidArgsException iaEx) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(iaEx.getMessage());
         } catch (Exception ex) {
