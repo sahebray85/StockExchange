@@ -33,9 +33,10 @@ GET /price?ticker=AMZN&from=2021-10-01&to=2021-11-01
 ### How to Build the application
 ---
 1. Clone the repository to your local system
+```
    $> git clone https://github.com/sahebray85/StockExchange.git
-
-2. Build the Application
+```
+3. Build the Application
 
    2.a) Goto to your checkout location
    
